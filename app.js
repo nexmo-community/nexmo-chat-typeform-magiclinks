@@ -1,11 +1,15 @@
 var createError = require('http-errors');
 var express = require('express');
+var session = require('express-session');
+var passport = require('passport');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+require('dotenv').config();
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var authRouter = require('./routes/auth');
+var webhookRouter = require('./routes/webhook');
 
 var app = express();
 
@@ -15,12 +19,45 @@ app.set('view engine', 'pug');
 
 app.use(logger('dev'));
 app.use(express.json());
+
+app.use(session({ 
+  secret: process.env.SECRET,
+  resave: true,
+  saveUninitialized: true
+}));
+
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser(function(user, done) {
+  console.log('serializeUser', user);
+  done(null, user.email);
+});
+
+passport.deserializeUser(function(email, done) {
+  console.log('deserializeUser', { email: email });
+  done(null, { email: email });
+});
+
+var jwtStrategy = require('passport-jwt').Strategy;
+var jwtExtractor = require('passport-jwt').ExtractJwt;
+
+var opts = { 
+  jwtFromRequest: jwtExtractor.fromUrlQueryParameter('token'),
+  secretOrKey: process.env.SECRET
+};
+
+passport.use(new jwtStrategy(opts, function(payload, done) {
+  return done(null, payload);
+}))
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/auth', passport.authenticate('jwt', { session: true }), authRouter);
+app.use('/webhooks', webhookRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
