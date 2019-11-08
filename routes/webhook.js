@@ -1,6 +1,7 @@
 var express = require('express');
 var jwt = require('jsonwebtoken');
 var router = express.Router();
+var mailer = require('nodemailer');
 require('dotenv').config();
 
 /* POST webhook generates a magic link email to the provided email address */
@@ -28,6 +29,30 @@ router.post('/magiclink', function(req, res, next) {
   var token = jwt.sign({ email: answer }, process.env.SECRET);
 
   // email token in magic link
+  var transporter = nodeMailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT,
+    secure: true,
+    auth: {
+        // should be replaced with real sender's account
+        user: process.env.SMTP_AUTH_USER,
+        pass: process.env.SMTP_AUTH_PASS
+    }
+  });
+  let mailOptions = {
+      // should be replaced with real recipient's account
+      to: 'info@gmail.com',
+      subject: req.body.subject,
+      body: req.body.message
+  };
+  transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+          return console.log(error);
+      }
+      console.log('Message %s sent: %s', info.messageId, info.response);
+  });
+
+  // logging
   console.log(token);
   console.log(req.protocol + '://' + req.get('host') + '/auth?token=' + token);
 
