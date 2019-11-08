@@ -8,53 +8,35 @@ require('dotenv').config();
 router.post('/magiclink', function(req, res, next) {
   let { answers } = req.body.form_response;
 
-  let answer = answers
-    .filter(function (answer) {
-      return process.env.FORM_FIELD_TYPE === answer.type
-        && answer.field.ref === process.env.FORM_FIELD_REF
-        ;
-    })
-    .map(function(answer) {
-      var field = answer.type;
-      return answer[field]
-    })
-    [0];
+  const answer = answers
+    .find(answer => 'email' === answer.type && answer.field.ref === process.env.FORM_FIELD_REF);
 
-  console.log(answer);
-
-  // add user to users database if they're not there yet
-  
+  const email = answer[process.env.FORM_FIELD_TYPE];
 
   // generate JWT token for the magic link
-  var token = jwt.sign({ email: answer }, process.env.SECRET);
+  var token = jwt.sign({ email: email }, process.env.SECRET);
 
   // email token in magic link
-  var transporter = nodeMailer.createTransport({
+  var transporter = mailer.createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
     secure: true,
     auth: {
-        // should be replaced with real sender's account
         user: process.env.SMTP_AUTH_USER,
         pass: process.env.SMTP_AUTH_PASS
     }
   });
-  let mailOptions = {
-      // should be replaced with real recipient's account
-      to: 'info@gmail.com',
-      subject: req.body.subject,
-      body: req.body.message
-  };
-  transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-          return console.log(error);
-      }
-      console.log('Message %s sent: %s', info.messageId, info.response);
-  });
 
-  // logging
-  console.log(token);
-  console.log(req.protocol + '://' + req.get('host') + '/auth?token=' + token);
+  var magicLink = req.protocol + '://' + req.get('host') + '/auth?token=' + token;
+
+  var mailOptions = {
+      to: email,
+      subject: 'Magic Link',
+      text: 'Click to login: ' + magicLink,
+      html: `<a href="${magicLink}">Click to Login</a>`
+  };
+
+  transporter.sendMail(mailOptions);
 
   // send webhook response
   res.sendStatus(200);
