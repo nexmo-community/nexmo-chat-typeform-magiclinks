@@ -34,12 +34,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 passport.serializeUser(function(user, done) {
-  console.log('serializeUser', user);
   done(null, user.email);
 });
 
 passport.deserializeUser(function(email, done) {
-  console.log('deserializeUser', { email: email });
   done(null, { email: email });
 });
 

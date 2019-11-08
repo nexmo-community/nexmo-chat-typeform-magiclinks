@@ -12,6 +12,7 @@ var isAuthenticated = function(req, res, next) {
 
 /* GET home */
 router.get('/', isAuthenticated, function(req, res, next) {
+  console.log(req.user);
   res.render('index', { title: 'Express' });
 });
 

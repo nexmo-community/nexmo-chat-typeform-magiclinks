@@ -84,3 +84,6 @@ typings/
 
 # storage
 store/
+
+# vscode
+.vscode
