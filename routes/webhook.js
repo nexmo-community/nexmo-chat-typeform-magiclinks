@@ -6,11 +6,13 @@ require('dotenv').config();
 
 /* POST webhook generates a magic link email to the provided email address */
 router.post('/magiclink', function(req, res, next) {
+  // find answers from the typeform response
   let { answers } = req.body.form_response;
 
   const answer = answers
-    .find(answer => 'email' === answer.type && answer.field.ref === process.env.FORM_FIELD_REF);
+    .find(answer => process.env.FORM_FIELD_TYPE === answer.type && answer.field.ref === process.env.FORM_FIELD_REF);
 
+  // it'll probably be an email
   const email = answer[process.env.FORM_FIELD_TYPE];
 
   // generate JWT token for the magic link
