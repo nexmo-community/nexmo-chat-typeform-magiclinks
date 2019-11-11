@@ -6,6 +6,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 require('dotenv').config();
+var User = require('./models/user');
 
 var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth');
@@ -33,12 +34,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.serializeUser(function(user, done) {
-  done(null, user.email);
+passport.serializeUser((user, done) => {
+  done(null, user._id);
 });
 
-passport.deserializeUser(function(email, done) {
-  done(null, { email: email });
+passport.deserializeUser((id, done) => {
+  User.findById(id, (err, user) => {
+    done(err, user);
+  });
 });
 
 var jwtStrategy = require('passport-jwt').Strategy;
@@ -49,7 +52,7 @@ var opts = {
   secretOrKey: process.env.SECRET
 };
 
-passport.use(new jwtStrategy(opts, function(payload, done) {
+passport.use(new jwtStrategy(opts, (payload, done) => {
   return done(null, payload);
 }))
 
@@ -58,12 +61,12 @@ app.use('/auth', passport.authenticate('jwt', { session: true }), authRouter);
 app.use('/webhooks', webhookRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use((err, req, res, next) => {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
