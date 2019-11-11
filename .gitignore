@@ -87,3 +87,7 @@ store/
 
 # vscode
 .vscode
+
+# nexmo application files
+.nexmo-app
+private.key
