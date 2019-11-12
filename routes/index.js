@@ -13,7 +13,7 @@ var isAuthenticated = (req, res, next) => {
 
 /* GET home */
 router.get('/', isAuthenticated, (req, res, next) => {
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'Nexmo Typeform Chat' });
 });
 
 router.get('/jwt', isAuthenticated, (req, res, next) => {
@@ -47,6 +47,7 @@ router.get('/jwt', isAuthenticated, (req, res, next) => {
     member_id: req.user.member_id,
     display_name: req.user.display_name,
     client_token: jwt,
+    conversation_id: process.env.NEXMO_CONVERSATION_ID,
     expires_at: expires_at
   });
 })
