@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 require('dotenv').config();
 var nexmo = require('../util/nexmo');
+var User = require('../models/user');
 
 var isAuthenticated = (req, res, next) => {
   if(req.isAuthenticated()){
@@ -13,7 +14,9 @@ var isAuthenticated = (req, res, next) => {
 
 /* GET home */
 router.get('/', isAuthenticated, (req, res, next) => {
-  res.render('index', { title: 'Nexmo Typeform Chat' });
+  User.find((err, users) => {
+    res.render('index', { title: 'Nexmo Typeform Chat', members: users, user: req.user.display_name });
+  })
 });
 
 router.get('/jwt', isAuthenticated, (req, res, next) => {
