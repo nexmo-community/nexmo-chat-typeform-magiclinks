@@ -17,22 +17,20 @@ class ChatApp {
   }
 
   authenticateUser() {
-    var req = new XMLHttpRequest();
-    req.responseType = 'json';
-    req.open('GET', '/jwt', true);
-
-    var obj = this;
-    req.onload  = function() {
-       obj.joinConversation(req.response);
-    };
-
-    req.send(null);
+    this.joinConversation({
+      name: userName,
+      display_name: displayName,
+      conversation_id: conversationId,
+      client_token: clientToken
+    });
   }
 
   joinConversation(user) {
     var { client_token, conversation_id } = user;
 
-    new NexmoClient({ debug: false })
+    console.log(client_token);
+
+    new NexmoClient({ debug: true })
       .login(client_token)
       .then(app => {
         console.log('*** Logged into app', app);
