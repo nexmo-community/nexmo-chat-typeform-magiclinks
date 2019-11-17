@@ -23,7 +23,7 @@
               <li class="nav-item">
                 <a class="nav-link active" href="#">
                   <span data-feather="home"></span>
-                  username
+                  {{user}}
                 </a>
               </li>
             </ul>
@@ -35,14 +35,14 @@
               </a>
             </h6>
             <ul class="nav flex-column mb-2">
-              {{!-- {{#each members}} --}}
+              {{#each members}}
               <li class="nav-item">
                 <a class="nav-link text-muted" href="#">
                   <span data-feather="file-text"></span>
-                  other member
+                  {{this.display_name}}
                 </a>
               </li>
-              {{!-- {{/each}} --}}
+              {{/each}}
             </ul>
 
           </div>
@@ -58,12 +58,6 @@
         </main>
       </div>
     </div>
-    <script>
-      var userName = '';
-      var displayName = '';
-      var conversationId = '';
-      var clientToken = '';
-    </script>
     <script src="/scripts/nexmoClient.js"></script>
     <script src="/javascripts/chat.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

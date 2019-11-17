@@ -17,12 +17,16 @@ class ChatApp {
   }
 
   authenticateUser() {
-    this.joinConversation({
-      name: userName,
-      display_name: displayName,
-      conversation_id: conversationId,
-      client_token: clientToken
-    });
+    var req = new XMLHttpRequest();
+    req.responseType = 'json';
+    req.open('GET', '/jwt', true);
+
+    var obj = this;
+    req.onload  = function() {
+       obj.joinConversation(req.response);
+    };
+
+    req.send(null);
   }
 
   joinConversation(user) {
