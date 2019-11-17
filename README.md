@@ -1,39 +1,170 @@
 ![Nexmo][logo]
 
-# Project Name
+# Nexmo Chat with Passport.js, Magic Links and Typeform
 
-About the project etc etc.
+This project supports an article where you learn how to set up a basic [Typeform](https://www.typeform.com/) form and capture data from a webhook in [Node.js](https://nodejs.org/en/) framework [Express.js](https://expressjs.com/). You'll use [Passport.js](http://www.passportjs.org/) to authenticate a user, use [Nexmo's Node.js Server SDK](https://github.com/Nexmo/nexmo-node/tree/beta) to register a user, and generate a JWT to use with [Nexmo's JavaScript Client SDK](https://developer.nexmo.com/client-sdk/overview).
+
+The master branch is the starting point for this guide and as such expects you to run a basic client-side chat application by hardcoding credentials into JavaScript and running the application.
+
+Switch to the `tutorial-finish` branch to find additional steps for using this application with Typeform and [Nexmo's Node.js Server SDK](https://github.com/Nexmo/nexmo-node/tree/beta).
 
 **Table of Contents**
 
-
 - [Getting Started](#getting-started)
-  - [Start Locally](#start-locally)
-    - [Steps](#steps)
-    - [To](#to)
-    - [Get](#get)
-    - [Started](#started)
-    - [Locally](#locally)
-  - [Deploy with Heroku?](#deploy-with-heroku)
+  - [Prerequisites](#prerequisites)
+    - [Node & NPM](#node--npm)
+    - [Nexmo Account](#nexmo-account)
+    - [Nexmo CLI](#nexmo-cli)
+  - [Run the Application](#run-the-application)
+    - [Basic Installation](#basic-installation)
+    - [Create Nexmo Application](#create-nexmo-application)
+    - [Create Nexmo Conversation](#create-nexmo-conversation)
+    - [Create Your User](#create-your-user)
+    - [Add User To Conversation](#add-user-to-conversation)
+    - [Generate User Token](#generate-user-token)
+    - [Configure The Application](#configure-the-application)
 - [Code of Conduct](#code-of-conduct)
 - [Contributing](#contributing)
 - [License](#license)
 
 ## Getting Started
 
-### Start Locally
+### Prerequisites
 
-#### Steps
+#### Node & NPM
 
-#### To
+This application was developed using Node.js 13.1 and NPM 6.12. Check you have stable or long-term support versions of Node.js installed, at least.
 
-#### Get
+```bash
+node --version
+```
 
-#### Started
+```bash
+npm --version
+```
 
-#### Locally
+If you don't have Node.js or NPM, or you have older versions, head over to [nodejs.org and install the correct version](https://nodejs.org/en/) if you don't have it.
 
-### Deploy with Heroku?
+#### Nexmo Account
+
+[Sign up for a free Nexmo account](https://dashboard.nexmo.com/sign-up).
+
+#### Nexmo CLI
+
+To set up your application, you'll need to install the [Nexmo CLI](https://github.com/Nexmo/nexmo-cli/tree/beta). Install it using NPM in terminal.
+
+```bash
+npm install -g nexmo-cli@beta
+```
+
+Now, configure the CLI using your API key and secret, found on your [Nexmo account dashboard](https://dashboard.nexmo.com/).
+
+```bash
+nexmo setup <your_api_key> <your_api_secret>
+```
+
+### Run the Application
+
+The application you're starting with is a chat application built using Bootstrap and the [Nexmo JavaScript Client SDK](https://developer.nexmo.com/client-sdk/overview). It's configurable through editing static files, but launched using [Express.js](https://expressjs.com/), a lightweight Node.js based http server.
+
+#### Basic Installation
+
+Clone the demo application straight from GitHub.
+
+```bash
+git clone https://github.com/nexmo-community/nexmo-chat-typeform-magiclinks.git
+```
+
+Once cloned, change into the new demo application directory.
+
+```bash
+cd nexmo-chat-typeform-magiclinks
+```
+
+Install the npm dependencies.
+
+```bash
+npm install
+```
+
+Start the application the standard way.
+
+```bash
+npm start
+```
+
+Start the application, but with nodemon instead.
+
+```bash
+npm run dev
+```
+
+#### Create Nexmo Application
+
+```bash
+nexmo app:create "Nexmo RTC Chat" --capabilities=rtc --rtc-event-url=http://example.com --keyfile=private.key
+# Application created: 4556dbae-bf...f6e33350d8
+# Credentials written to .nexmo-app
+# Private Key saved to: private.key
+```
+
+#### Create Nexmo Conversation
+
+```bash
+nexmo conversation:create display_name="Typeform Chatroom"
+# Conversation created: CON-a57b0...11e57f56d
+```
+
+#### Create Your User
+
+```bash
+nexmo user:create name=<USER_NAME> display_name=<DISPLAY_NAME>
+# User created: USR-6eaa4...e36b8a47f
+```
+
+#### Add User To Conversation
+
+```bash
+nexmo member:add <CONVERSATION_ID> action=join channel='{"type":"app"}' user_id=<USER_ID>
+# Member added: MEM-df772...1ad7fa06
+```
+
+#### Generate User Token
+
+```bash
+nexmo jwt:generate ./private.key sub=<USER_NAME> exp=$(($(date +%s)+86400)) acl='{"paths":{"/*/users/**":{},"/*/conversations/**":{},"/*/sessions/**":{},"/*/devices/**":{},"/*/image/**":{},"/*/media/**":{},"/*/applications/**":{},"/*/push/**":{},"/*/knocking/**":{}}}' application_id=<APPLICATION_ID>
+# eyJhbGciOi...XVCJ9.eyJpYXQiOjE1NzM5M...In0.qn7J6...efWBpemaCDC7HtqA
+```
+
+#### Configure The Application
+
+Edit the `views/layout.hbs` file and find the JavaScript shown here.
+
+```html
+    <script>
+      var userName = '';
+      var displayName = '';
+      var conversationId = '';
+      var clientToken = '';
+    </script>
+```
+
+Edit the config with the values you've generated in the commands above.
+
+```html
+    <script>
+      var userName = 'luke.oliff@vonage.com';
+      var displayName = 'Luke Oliff';
+      var conversationId = 'CON-123...y6346';
+      var clientToken = 'eyJhbG9.eyJzdWIiO.Sfl5c';
+    </script>
+```
+
+Now, you can start the application again and start chatting... with yourself... because no one else can log in.
+
+```bash
+npm start
+```
 
 ## Code of Conduct
 
