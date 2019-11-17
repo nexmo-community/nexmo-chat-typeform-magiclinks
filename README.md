@@ -15,13 +15,16 @@ Switch to the `tutorial-finish` branch to find additional steps for using this a
     - [Node & NPM](#node--npm)
     - [Nexmo Account](#nexmo-account)
     - [Nexmo CLI](#nexmo-cli)
+    - [MongoDB](#mongodb)
+    - [Ngrok](#ngrok)
+    - [Typeform](#typeform)
+  - [Email SMTP Provider](#email-smtp-provider)
   - [Run the Application](#run-the-application)
     - [Basic Installation](#basic-installation)
+    - [Running Ngrok](#running-ngrok)
     - [Create Nexmo Application](#create-nexmo-application)
     - [Create Nexmo Conversation](#create-nexmo-conversation)
-    - [Create Your User](#create-your-user)
-    - [Add User To Conversation](#add-user-to-conversation)
-    - [Generate User Token](#generate-user-token)
+- [Creating a Typeform](#creating-a-typeform)
     - [Configure The Application](#configure-the-application)
 - [Code of Conduct](#code-of-conduct)
 - [Contributing](#contributing)
@@ -63,6 +66,24 @@ Now, configure the CLI using your API key and secret, found on your [Nexmo accou
 nexmo setup <your_api_key> <your_api_secret>
 ```
 
+#### MongoDB
+
+Follow the correct [MongoDB Community Edition installation guide](https://docs.mongodb.com/manual/administration/install-community/) for your system.
+
+#### Ngrok
+
+[Sign up and configure ngrok](https://ngrok.com/) by following the instructions on their site.
+
+#### Typeform
+
+[Sign-up now for a free Typeform account](https://admin.typeform.com/signup).
+
+### Email SMTP Provider
+
+You'll be sending emails. You'll need the hostname, port, a login and a password for an SMTP provider.
+
+You can use [Google Mail to send email from an app](https://support.google.com/a/answer/176600?hl=en).
+
 ### Run the Application
 
 The application you're starting with is a chat application built using Bootstrap and the [Nexmo JavaScript Client SDK](https://developer.nexmo.com/client-sdk/overview). It's configurable through editing static files, but launched using [Express.js](https://expressjs.com/), a lightweight Node.js based http server.
@@ -99,6 +120,16 @@ Start the application, but with nodemon instead.
 npm run dev
 ```
 
+#### Running Ngrok
+
+You need to run ngrok to receive information to the webhook from Typeform.
+
+```bash
+ngrok http 3000
+```
+
+This needs to be running in the same directory and at the same time as the application running with `npm`.
+
 #### Create Nexmo Application
 
 ```bash
@@ -115,52 +146,46 @@ nexmo conversation:create display_name="Typeform Chatroom"
 # Conversation created: CON-a57b0...11e57f56d
 ```
 
-#### Create Your User
+## Creating a Typeform
 
-```bash
-nexmo user:create name=<USER_NAME> display_name=<DISPLAY_NAME>
-# User created: USR-6eaa4...e36b8a47f
-```
+You can capture as much data as you like from your Typeform. But, for this application, ensure you have a least an email field on the form.
 
-#### Add User To Conversation
+Once you have created your Typeform, click over to the **Connect** tab on your Typeform edit page and click on **Webhooks**.
 
-```bash
-nexmo member:add <CONVERSATION_ID> action=join channel='{"type":"app"}' user_id=<USER_ID>
-# Member added: MEM-df772...1ad7fa06
-```
-
-#### Generate User Token
-
-```bash
-nexmo jwt:generate ./private.key sub=<USER_NAME> exp=$(($(date +%s)+86400)) acl='{"paths":{"/*/users/**":{},"/*/conversations/**":{},"/*/sessions/**":{},"/*/devices/**":{},"/*/image/**":{},"/*/media/**":{},"/*/applications/**":{},"/*/push/**":{},"/*/knocking/**":{}}}' application_id=<APPLICATION_ID>
-# eyJhbGciOi...XVCJ9.eyJpYXQiOjE1NzM5M...In0.qn7J6...efWBpemaCDC7HtqA
-```
+Click on **Add a webhook** and enter the URL as `https://<your_url>.ngrok.io/webhooks/magiclink`. Then click **Save webhook**.
 
 #### Configure The Application
 
-Edit the `views/layout.hbs` file and find the JavaScript shown here.
+Create a `.env` file using `.env.example` and configure the application as shown.
 
-```html
-    <script>
-      var userName = '';
-      var displayName = '';
-      var conversationId = '';
-      var clientToken = '';
-    </script>
+```bash
+# app config
+PORT=3000                                         # default port for node apps running locally
+SECRET=whateveryouwant                            # a secret alphanumeric string
+
+# typeform config
+FORM_URL=https://username.typeform.com/to/123456  # public typeform URL
+FORM_FIELD_TYPE=email                             # email type is expected
+FORM_FIELD_REF=e8b6-5b1-4f5-8ee-bth81             # typeform question reference
+
+# mongodb config
+MONGO_URL=mongodb://127.0.0.1:27017/database      # url to mongo server/database
+
+# nexmo config
+NEXMO_API_KEY=<api-key>                           # from the nexmo dashboard 
+NEXMO_API_SECRET=<api-secret>                     # from the nexmo dashboard
+NEXMO_APP_ID=4556dbae-bf...f6e33350d8             # from the command ran above
+NEXMO_PRIVATE_KEY_PATH=./private.key              # from the command ran above
+NEXMO_CONVERSATION_ID=CON-a57b0...11e57f56d       # from the command ran above
+
+# smtp config
+SMTP_HOST=smtp.gmail.com                          # your smtp hostname
+SMTP_PORT=465                                     # your smtp host port
+SMTP_AUTH_USER=<smtp-username>                    # your smtp username
+SMTP_AUTH_PASS=<smtp-password>                    # your smtp password
 ```
 
-Edit the config with the values you've generated in the commands above.
-
-```html
-    <script>
-      var userName = 'luke.oliff@vonage.com';
-      var displayName = 'Luke Oliff';
-      var conversationId = 'CON-123...y6346';
-      var clientToken = 'eyJhbG9.eyJzdWIiO.Sfl5c';
-    </script>
-```
-
-Now, you can start the application again and start chatting... with yourself... because no one else can log in.
+Once configured, start the application. If you restart ngrok, you'll need to reconfigure your webhook in the Typeform settings.
 
 ```bash
 npm start
