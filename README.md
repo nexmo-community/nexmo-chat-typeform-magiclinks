@@ -18,14 +18,14 @@ Switch to the `tutorial-finish` branch to find additional steps for using this a
     - [MongoDB](#mongodb)
     - [Ngrok](#ngrok)
     - [Typeform](#typeform)
-  - [Email SMTP Provider](#email-smtp-provider)
+    - [Email SMTP Provider](#email-smtp-provider)
   - [Run the Application](#run-the-application)
     - [Basic Installation](#basic-installation)
     - [Running Ngrok](#running-ngrok)
     - [Create Nexmo Application](#create-nexmo-application)
     - [Create Nexmo Conversation](#create-nexmo-conversation)
-- [Creating a Typeform](#creating-a-typeform)
-    - [Configure The Application](#configure-the-application)
+    - [Creating a Typeform](#creating-a-typeform)
+    - [Configure the Application](#configure-the-application)
 - [Code of Conduct](#code-of-conduct)
 - [Contributing](#contributing)
 - [License](#license)
@@ -78,7 +78,7 @@ Follow the correct [MongoDB Community Edition installation guide](https://docs.m
 
 [Sign-up now for a free Typeform account](https://admin.typeform.com/signup).
 
-### Email SMTP Provider
+#### Email SMTP Provider
 
 You'll be sending emails. You'll need the hostname, port, a login and a password for an SMTP provider.
 
@@ -86,7 +86,7 @@ You can use [Google Mail to send email from an app](https://support.google.com/a
 
 ### Run the Application
 
-The application you're starting with is a chat application built using Bootstrap and the [Nexmo JavaScript Client SDK](https://developer.nexmo.com/client-sdk/overview). It's configurable through editing static files, but launched using [Express.js](https://expressjs.com/), a lightweight Node.js based http server.
+This application is a chat application built using Bootstrap and the [Nexmo JavaScript Client SDK](https://developer.nexmo.com/client-sdk/overview). You use Typeform to register users, click on magic links to authenticate and join a Nexmo conversation.
 
 #### Basic Installation
 
@@ -146,7 +146,7 @@ nexmo conversation:create display_name="Typeform Chatroom"
 # Conversation created: CON-a57b0...11e57f56d
 ```
 
-## Creating a Typeform
+#### Creating a Typeform
 
 You can capture as much data as you like from your Typeform. But, for this application, ensure you have a least an email field on the form.
 
@@ -154,7 +154,7 @@ Once you have created your Typeform, click over to the **Connect** tab on your T
 
 Click on **Add a webhook** and enter the URL as `https://<your_url>.ngrok.io/webhooks/magiclink`. Then click **Save webhook**.
 
-#### Configure The Application
+#### Configure the Application
 
 Create a `.env` file using `.env.example` and configure the application as shown.
 
