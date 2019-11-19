@@ -1,6 +1,6 @@
 ![Nexmo][logo]
 
-# Nexmo Chat with Passport.js, Magic Links and Typeform
+# Nexmo Chat with Typeform
 
 This project supports an article where you learn how to set up a basic [Typeform](https://www.typeform.com/) form and capture data from a webhook in [Node.js](https://nodejs.org/en/) framework [Express.js](https://expressjs.com/). You'll use [Passport.js](http://www.passportjs.org/) to authenticate a user, use [Nexmo's Node.js Server SDK](https://github.com/Nexmo/nexmo-node/tree/beta) to register a user, and generate a JWT to use with [Nexmo's JavaScript Client SDK](https://developer.nexmo.com/client-sdk/overview).
 
